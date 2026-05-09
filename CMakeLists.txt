@@ -57,9 +57,15 @@ if(EXISTS "${_LOCAL_OPENCV_CUDA_DIR}/OpenCVConfig.cmake")
   set(OpenCV_DIR "${_LOCAL_OPENCV_CUDA_DIR}" CACHE PATH "" FORCE)
 endif()
 
+set(_LOCAL_OPEN3D_DIR "$ENV{HOME}/.local/open3d/lib/cmake/Open3D")
+if(EXISTS "${_LOCAL_OPEN3D_DIR}")
+  set(Open3D_DIR "${_LOCAL_OPEN3D_DIR}" CACHE PATH "" FORCE)
+endif()
+
 find_package(OpenCV REQUIRED COMPONENTS core imgcodecs imgproc features2d calib3d)
 find_package(Eigen3 REQUIRED)
 find_package(SQLite3 REQUIRED)
+find_package(Open3D REQUIRED)
 
 file(GLOB_RECURSE GEORELOC_SOURCE_FILES CONFIGURE_DEPENDS
   "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c"
@@ -99,6 +105,7 @@ target_link_libraries(georeloc
     Eigen3::Eigen
     SQLite::SQLite3
     ${OpenCV_LIBS}
+    Open3D::Open3D
 )
 
 set_target_properties(georeloc PROPERTIES
