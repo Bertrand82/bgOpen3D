@@ -1,0 +1,51 @@
+# Build outputs
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+Makefile
+
+# CTest
+Testing/
+CTestTestfile.cmake
+
+# Executables and libraries
+*.exe
+*.out
+*.app
+*.dll
+*.so
+*.dylib
+*.a
+*.lib
+
+# Object and debug files
+*.o
+*.obj
+*.lo
+*.slo
+*.gch
+*.pch
+*.d
+*.gcno
+*.gcda
+*.gcov
+
+# Logs and temporary files
+*.log
+*.tmp
+*.swp
+*.swo
+*~
+
+# IDE/editor settings
+.idea/
+.vscode/
+
+# Project-generated test outputs
+tests/
+build/
+data/fused_0.ply
+data/fused_1.ply
