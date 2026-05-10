@@ -55,7 +55,7 @@ fi
 
 # Exécuter le test
 echo -e "${YELLOW}Exécution du test...${NC}"
-"$BUILD_DIR/bgOpen3D" "$OUTPUT_FILE" "$DATA_DIR/fused_0.ply" "$DATA_DIR/fused_1.ply"
+"$BUILD_DIR/bgOpen3D" --merge "$OUTPUT_FILE" "$DATA_DIR/fused_0.ply" "$DATA_DIR/fused_1.ply"
 
 # Vérifier le résultat
 if [ -f "$OUTPUT_FILE" ]; then

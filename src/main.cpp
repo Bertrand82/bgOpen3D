@@ -1,58 +1,83 @@
-#include <open3d/Open3D.h>
+#include "point_cloud_merge.h"
 
 #include <iostream>
-#include <memory>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
+namespace {
+
+void PrintUsage(const char* program_name) {
+    std::cerr << "Usage: " << program_name
+              << " --merge output.ply input1.ply input2.ply [input3.ply ...]\n"
+              << "       " << program_name
+              << " --poisson output.ply input1.ply input2.ply [input3.ply ...]\n"
+              << "       " << program_name
+              << " --buildMeshBallPivoting [--radius value] output.ply input1.ply input2.ply [input3.ply ...]"
+              << std::endl;
+}
+
+}  // namespace
+
 int main(int argc, char* argv[]) {
-    if (argc < 4) {
-        std::cerr << "Usage: " << argv[0]
-                  << " output.ply input1.ply input2.ply [input3.ply ...]" << std::endl;
+    if (argc < 5) {
+        PrintUsage(argv[0]);
         return 1;
     }
 
-    const std::string output_file = argv[1];
+    const std::string mode = argv[1];
+    const std::string output_file = argv[2];
+    std::vector<std::string> input_files;
+    input_files.reserve(static_cast<std::size_t>(argc - 3));
 
-    open3d::geometry::PointCloud merged_cloud;
-    bool has_colors = false;
-    bool has_normals = false;
+    for (int i = 3; i < argc; ++i) {
+        input_files.emplace_back(argv[i]);
+    }
 
-    for (int i = 2; i < argc; ++i) {
-        const std::string input_file = argv[i];
-        open3d::geometry::PointCloud cloud;
+    if (mode == "--merge") {
+        return MergePointCloudFiles(output_file, input_files);
+    }
 
-        std::cout << "Loading: " << input_file << std::endl;
+    if (mode == "--poisson") {
+        return PoissonFromPointCloudFiles(output_file, input_files);
+    }
 
-        if (!open3d::io::ReadPointCloud(input_file, cloud)) {
-            std::cerr << "Error: failed to read point cloud: " << input_file << std::endl;
+    if (mode == "--buildMeshBallPivoting") {
+        double radius = 0.005;
+        int first_input_index = 3;
+
+        if (argc >= 7 && std::string(argv[2]) == "--radius") {
+            try {
+                radius = std::stod(argv[3]);
+            } catch (const std::exception&) {
+                std::cerr << "Error: invalid radius value: " << argv[3] << std::endl;
+                return 1;
+            }
+
+            if (argc < 7) {
+                PrintUsage(argv[0]);
+                return 1;
+            }
+
+            first_input_index = 5;
+        }
+
+        const std::string ball_output_file = argv[first_input_index - 1];
+        std::vector<std::string> ball_input_files;
+        ball_input_files.reserve(static_cast<std::size_t>(argc - first_input_index));
+
+        for (int i = first_input_index; i < argc; ++i) {
+            ball_input_files.emplace_back(argv[i]);
+        }
+
+        if (ball_input_files.size() < 2) {
+            PrintUsage(argv[0]);
             return 1;
         }
 
-        if (cloud.IsEmpty()) {
-            std::cout << "Warning: point cloud is empty: " << input_file << std::endl;
-        }
-
-        if (cloud.HasColors()) {
-            has_colors = true;
-        }
-        if (cloud.HasNormals()) {
-            has_normals = true;
-        }
-
-        merged_cloud += cloud;
-
-        std::cout << "  Points loaded: " << cloud.points_.size() << std::endl;
+        return BallPivotingFromPointCloudFiles(ball_output_file, ball_input_files, radius);
     }
 
-    std::cout << "Merged point count: " << merged_cloud.points_.size() << std::endl;
-
-    if (!open3d::io::WritePointCloud(output_file, merged_cloud)) {
-        std::cerr << "Error: failed to write merged point cloud: " << output_file << std::endl;
-        return 1;
-    }
-
-    std::cout << "Merged point cloud written to: " << output_file << std::endl;
-
-    return 0;
+    PrintUsage(argv[0]);
+    return 1;
 }
