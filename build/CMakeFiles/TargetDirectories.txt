@@ -1,0 +1,3 @@
+/home/bertrand/workspaceCpp/bgOpen3D/build/CMakeFiles/bgOpen3D.dir
+/home/bertrand/workspaceCpp/bgOpen3D/build/CMakeFiles/edit_cache.dir
+/home/bertrand/workspaceCpp/bgOpen3D/build/CMakeFiles/rebuild_cache.dir
