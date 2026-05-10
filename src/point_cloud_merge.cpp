@@ -9,14 +9,19 @@
 
 bool LoadAndMergePointCloudFiles(const std::vector<std::string>& input_files,
                                  open3d::geometry::PointCloud& merged_cloud) {
+    std::size_t loaded_files = 0;
+    std::size_t skipped_files = 0;
+
     for (const std::string& input_file : input_files) {
         open3d::geometry::PointCloud cloud;
 
         std::cout << "Loading: " << input_file << std::endl;
 
         if (!open3d::io::ReadPointCloud(input_file, cloud)) {
-            std::cerr << "Error: failed to read point cloud: " << input_file << std::endl;
-            return false;
+            std::cerr << "Warning: skipping invalid point cloud file: " << input_file
+                      << std::endl;
+            ++skipped_files;
+            continue;
         }
 
         if (cloud.IsEmpty()) {
@@ -24,8 +29,19 @@ bool LoadAndMergePointCloudFiles(const std::vector<std::string>& input_files,
         }
 
         merged_cloud += cloud;
+        ++loaded_files;
 
         std::cout << "  Points loaded: " << cloud.points_.size() << std::endl;
+    }
+
+    if (loaded_files == 0) {
+        std::cerr << "Error: no valid point cloud could be loaded." << std::endl;
+        return false;
+    }
+
+    if (skipped_files > 0) {
+        std::cout << "Warning: " << skipped_files
+                  << " invalid input file(s) were skipped." << std::endl;
     }
 
     std::cout << "Merged point count: " << merged_cloud.points_.size() << std::endl;
