@@ -35,10 +35,21 @@ Usage:
 	/home/bertrand/workspaceCpp/bgOpen3D/build/bgOpen3D --buildMeshBallPivoting [--radius value] output.ply input1.ply input2.ply [input3.ply ...]
 - Post-merge cleanup (via bgOpen3D):
 	/home/bertrand/workspaceCpp/bgOpen3D/build/bgOpen3D --post-merge [--voxel size] [--dedup-eps eps] [--skip-dedup] input.ply output.ply
-
+	Valeurs par defaut:
+	- --voxel: desactive (0.0)
+	- --dedup-eps: 0.0 (deduplication exacte)
+	- --skip-dedup: desactive (deduplication active)
+	Plages possibles:
+	- --voxel: >= 0 (0.0 ou omis = desactive; > 0 = downsampling, plus grand = moins de points)
+	- --dedup-eps: >= 0 (0.0 = exacte; > 0 = tolerance, ex: 1e-8 a 1e-6, plus grand = plus agressif)
+	- --skip-dedup: drapeau booléen (absent = deduplication active; present = deduplication desactivee)
 - Post-merge cleanup (standalone):
 	/home/bertrand/workspaceCpp/bgOpen3D/build/point_cloud_post_merge [--voxel size] [--dedup-eps eps] [--skip-dedup] input.ply output.ply
-	Options:
-	- --voxel size: downsampling voxel optionnel (> 0)
-	- --dedup-eps eps: tolerance de dedoublonnage (0 = exact)
-	- --skip-dedup: desactive la suppression des doublons
+	Valeurs par defaut:
+	- --voxel: desactive (0.0)
+	- --dedup-eps: 0.0 (deduplication exacte)
+	- --skip-dedup: desactive (deduplication active)
+	Plages possibles:
+	- --voxel: >= 0 (0.0 ou omis = desactive; > 0 = downsampling, plus grand = moins de points)
+	- --dedup-eps: >= 0 (0.0 = exacte; > 0 = tolerance, ex: 1e-8 a 1e-6, plus grand = plus agressif)
+	- --skip-dedup: drapeau booléen (absent = deduplication active; present = deduplication desactivee)
