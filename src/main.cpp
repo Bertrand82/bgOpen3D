@@ -14,7 +14,9 @@ void PrintUsage(const char* program_name) {
               << " --poisson [--depth value] [--width value] [--scale value] [--threads value]"
               << " [--voxel value] [--auto-depth] [--linear-fit] output.ply input1.ply input2.ply [input3.ply ...]\n"
               << "       " << program_name
-              << " --buildMeshBallPivoting [--radius value] output.ply input1.ply input2.ply [input3.ply ...]"
+              << " --buildMeshBallPivoting [--radius value] output.ply input1.ply input2.ply [input3.ply ...]\n"
+              << "       " << program_name
+              << " --post-merge [--voxel size] [--dedup-eps eps] [--skip-dedup] input.ply output.ply"
               << std::endl;
 }
 
@@ -193,6 +195,64 @@ int main(int argc, char* argv[]) {
         }
 
         return BallPivotingFromPointCloudFiles(ball_output_file, ball_input_files, radius);
+    }
+
+    if (mode == "--post-merge") {
+        double voxel_size = 0.0;
+        double dedup_eps = 0.0;
+        bool skip_dedup = false;
+
+        int index = 2;
+        while (index < argc) {
+            const std::string arg = argv[index];
+
+            if (arg == "--skip-dedup") {
+                skip_dedup = true;
+                ++index;
+                continue;
+            }
+
+            if (arg == "--voxel" || arg == "--dedup-eps") {
+                if (index + 1 >= argc) {
+                    std::cerr << "Error: missing value for " << arg << std::endl;
+                    return 1;
+                }
+
+                try {
+                    if (arg == "--voxel") {
+                        voxel_size = std::stod(argv[index + 1]);
+                    } else {
+                        dedup_eps = std::stod(argv[index + 1]);
+                    }
+                } catch (const std::exception&) {
+                    std::cerr << "Error: invalid value for " << arg << ": " << argv[index + 1] << std::endl;
+                    return 1;
+                }
+
+                index += 2;
+                continue;
+            }
+
+            if (arg.rfind("--", 0) == 0) {
+                std::cerr << "Error: unknown option for --post-merge: " << arg << std::endl;
+                return 1;
+            }
+
+            break;
+        }
+
+        if (argc - index != 2) {
+            PrintUsage(argv[0]);
+            return 1;
+        }
+
+        const std::string input_file = argv[index];
+        const std::string output_file = argv[index + 1];
+        return PostMergePointCloudFile(output_file,
+                                       input_file,
+                                       voxel_size,
+                                       dedup_eps,
+                                       skip_dedup);
     }
 
     PrintUsage(argv[0]);

@@ -56,6 +56,12 @@ int MergePointCloudFiles(const std::string& output_file,
         return 1;
     }
 
+    std::cout << "Applying post-merge cleanup..." << std::endl;
+    if (PostMergePointCloudInPlace(merged_cloud, 0.0, 0.0, false) != 0) {
+        std::cerr << "Error: post-merge cleanup failed." << std::endl;
+        return 1;
+    }
+
     if (!open3d::io::WritePointCloud(output_file, merged_cloud)) {
         std::cerr << "Error: failed to write merged point cloud: " << output_file << std::endl;
         return 1;

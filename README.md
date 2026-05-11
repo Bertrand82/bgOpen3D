@@ -1,13 +1,11 @@
 ### bgOpen3D
 
 ### pour compiler 
-'''bash
-mkdir -p build
-cd build
-cmake ..
-cmake --build .
-./bgOpen3D
-'''
+```bash
+cmake --preset linux-local
+cmake --build --preset linux-local
+./build/bgOpen3D
+```
 
 ## Usage
 
@@ -35,3 +33,12 @@ Usage:
 	- --linear-fit: optionnel, a activer seulement si le resultat vous convient visuellement
 - Ball pivoting:
 	/home/bertrand/workspaceCpp/bgOpen3D/build/bgOpen3D --buildMeshBallPivoting [--radius value] output.ply input1.ply input2.ply [input3.ply ...]
+- Post-merge cleanup (via bgOpen3D):
+	/home/bertrand/workspaceCpp/bgOpen3D/build/bgOpen3D --post-merge [--voxel size] [--dedup-eps eps] [--skip-dedup] input.ply output.ply
+
+- Post-merge cleanup (standalone):
+	/home/bertrand/workspaceCpp/bgOpen3D/build/point_cloud_post_merge [--voxel size] [--dedup-eps eps] [--skip-dedup] input.ply output.ply
+	Options:
+	- --voxel size: downsampling voxel optionnel (> 0)
+	- --dedup-eps eps: tolerance de dedoublonnage (0 = exact)
+	- --skip-dedup: desactive la suppression des doublons
